@@ -4,8 +4,38 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node --env-file=.env server.js",
+    "dev": "node --env-file=.env --watch server.js",
+    "lint": "eslint . --ext .js --report-unused-disable-directives --max-warnings 0",
+    "lint:fix": "eslint . --ext .js --fix",
+    "prepare": "husky install && npx husky add .husky/pre-commit \"npx lint-staged\"",
+    "prettier": "prettier --write"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "celebrate": "^15.0.3",
+    "cors": "^2.8.5",
+    "date-fns": "^3.6.0",
+    "express": "^4.19.2",
+    "express-end": "^0.0.8",
+    "helmet": "^7.1.0",
+    "joi": "^17.13.1",
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^1.4.5-lts.1",
+    "node-cron": "^3.0.3",
+    "nodemailer": "^6.9.13",
+    "pg": "^8.11.5",
+    "request-ip": "^3.3.0",
+    "sequelize": "^6.37.3",
+    "sequelize-cli": "^6.6.2",
+    "winston": "^3.13.0",
+    "winston-daily-rotate-file": "^5.0.0",
+    "winston-transport": "^4.7.0",
+    "xss-clean": "^0.1.4"
+  },
+  "devDependencies": {
+    "prettier": "^3.2.5"
+  }
 }
