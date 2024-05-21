@@ -2,6 +2,16 @@ const { createLogger, format, transports } = require('winston');
 const DailyRotateFile = require('winston-daily-rotate-file');
 const SequelizeTransport = require('./SequelizeTransport'); // Ensure this path is correct based on your project structure
 
+// Custom format for console output with colors
+const consoleFormat = format.printf(({ level, message, timestamp, ...metadata }) => {
+  if (level === 'error') {
+    return `${timestamp} [${level.toUpperCase()}]: ${message}`;
+  } else {
+    const { statusCode, url } = metadata;
+    return `${timestamp} [${level.toUpperCase()}]: ${message} (Status Code: ${statusCode}, URL: ${url})`;
+  }
+});
+
 const logger = createLogger({
   level: 'info',
   format: format.combine(
@@ -32,18 +42,12 @@ const logger = createLogger({
   ]
 });
 
-// Custom console transport configuration
+// Add colored console transport
 logger.add(new transports.Console({
   format: format.combine(
     format.colorize(),
-    format.printf(({ level, message, timestamp, ...metadata }) => {
-      if (level === 'error') {
-        return `${timestamp} [${level.toUpperCase()}]: ${message}`;
-      } else {
-        const { statusCode, url } = metadata;
-        return `${timestamp} [${level.toUpperCase()}]: ${message} (Status Code: ${statusCode}, URL: ${url})`;
-      }
-    })
+    format.timestamp(),
+    consoleFormat
   )
 }));
 
