@@ -11,7 +11,7 @@ const mediaRouter = require('./src/routes/media.routes');
 const userRouter = require('./src/routes/user.routes');
 const distributionRoutes = require('./src/routes/distribution.routes');
 const salesmanRoutes = require('./src/routes/salesman.routes');
-
+const transactionRoutes = require('./src/routes/transaction.routes');
 
 const helmet = require('helmet');
 const xss = require('xss-clean');
@@ -93,7 +93,7 @@ app.use('/uploads', express.static('uploads'));
 app.use('/' + process.env.ROUTE + '/user', userRouter);
 app.use('/' + process.env.ROUTE + '/media', mediaRouter);
 app.use('/' + process.env.ROUTE + '/distributions', distributionRoutes); // Distribution routes
-app.use('/' + process.env.ROUTE + '/salesmen', salesmanRoutes); // Salesman routes
+app.use('/' + process.env.ROUTE + '/transactions', transactionRoutes); // Salesman routes
 
 
 // ----------------------------Middleware for catching 404 and forward to error handler
