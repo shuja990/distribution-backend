@@ -1,13 +1,12 @@
 const Joi = require('joi');
 
-const transactionSchemas = {
-    createTransaction: {
+const expenseSchemas = {
+    createExpense: {
         body: Joi.object({
             amount: Joi.number().required(),
-            paymentStatus: Joi.string().valid('paid', 'credit', 'partial').required(),
+            paymentStatus: Joi.string().valid('paid', 'credit').required(),
             description: Joi.string().allow(null, ''),
             createdBy: Joi.string().uuid().required(),
-            salesmanId: Joi.string().uuid().allow(null, ''),
             distributionId: Joi.string().uuid().allow(null, ''),
             isActive: Joi.boolean().default(true)
         }),
@@ -15,12 +14,10 @@ const transactionSchemas = {
             authorization: Joi.string().required()
         }).unknown()
     },
-    getAllTransactions: {
+    getAllExpenses: {
         query: Joi.object({
-            paymentStatus: Joi.string().valid('paid', 'credit', 'partial').optional(),
-            salesmanId: Joi.string().uuid().optional(),
+            paymentStatus: Joi.string().valid('paid', 'credit').optional(),
             distributionId: Joi.string().uuid().optional(),
-            type: Joi.string().optional(),
             dateRange: Joi.object({
                 start: Joi.date().required(),
                 end: Joi.date().required()
@@ -32,7 +29,7 @@ const transactionSchemas = {
             authorization: Joi.string().required()
         }).unknown()
     },
-    getTransaction: {
+    getExpense: {
         params: Joi.object({
             id: Joi.string().uuid().required()
         }),
@@ -40,16 +37,15 @@ const transactionSchemas = {
             authorization: Joi.string().required()
         }).unknown()
     },
-    updateTransaction: {
+    updateExpense: {
         params: Joi.object({
             id: Joi.string().uuid().required()
         }),
         body: Joi.object({
             amount: Joi.number(),
-            paymentStatus: Joi.string().valid('paid', 'credit', 'partial'),
+            paymentStatus: Joi.string().valid('paid', 'credit'),
             description: Joi.string().allow(null, ''),
             createdBy: Joi.string().uuid(),
-            salesmanId: Joi.string().uuid().allow(null, ''),
             distributionId: Joi.string().uuid().allow(null, ''),
             isActive: Joi.boolean()
         }),
@@ -57,7 +53,15 @@ const transactionSchemas = {
             authorization: Joi.string().required()
         }).unknown()
     },
-    deleteTransaction: {
+    deleteExpense: {
+        params: Joi.object({
+            id: Joi.string().uuid().required()
+        }),
+        headers: Joi.object({
+            authorization: Joi.string().required()
+        }).unknown()
+    },
+    markAsPaid: {
         params: Joi.object({
             id: Joi.string().uuid().required()
         }),
@@ -67,4 +71,4 @@ const transactionSchemas = {
     }
 };
 
-module.exports = transactionSchemas;
+module.exports = expenseSchemas;

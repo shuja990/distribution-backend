@@ -1,66 +1,31 @@
-const { Transaction, Salesman, Distribution, User } = require('../models');
-const { Op } = require('sequelize');
+const { Transaction, User, Salesman, Distribution, Sequelize } = require('../models');
+const { Op } = Sequelize;
 
 const createTransaction = async (transactionData) => {
-    return await Transaction.create(transactionData);
+    // Create the transaction
+    const transaction = await Transaction.create(transactionData);
+
+    // Placeholder: If the transaction is partially paid, create a recovery record
+    if (transactionData.paymentStatus === 'partial') {
+        // Implement recovery creation logic here
+    }
+
+    return transaction;
 };
 
 const getTransactionById = async (id) => {
     return await Transaction.findByPk(id, {
         include: [
+            { model: User, as: 'creator', attributes: ['id', 'username', 'email'] },
             { model: Salesman, as: 'salesman', attributes: ['id', 'name', 'contactInfo', 'address'] },
-            { model: Distribution, as: 'distribution', attributes: ['id', 'companyName', 'details', 'initialInvestment'] },
-            { model: User, as: 'creator', attributes: ['id', 'username', 'email'] }
+            { model: Distribution, as: 'distribution', attributes: ['id', 'companyName', 'details', 'initialInvestment'] }
         ]
     });
 };
 
-const updateTransaction = async (id, transactionData) => {
-    const [updated] = await Transaction.update(transactionData, {
-        where: { id }
-    });
-    if (updated) {
-        const updatedTransaction = await getTransactionById(id);
-        return updatedTransaction;
-    }
-    throw new Error('Transaction not found');
-};
-
-const deleteTransaction = async (id) => {
-    const deleted = await Transaction.destroy({
-        where: { id }
-    });
-    if (deleted) {
-        return true;
-    }
-    throw new Error('Transaction not found');
-};
-
-const markAsPaid = async (id, paidAmount) => {
-    const transaction = await getTransactionById(id);
-    if (!transaction) throw new Error('Transaction not found');
-
-    if (transaction.paymentStatus === 'paid') {
-        throw new Error('Transaction is already fully paid');
-    }
-
-    if (transaction.paymentStatus === 'credit' || transaction.paymentStatus === 'partial') {
-        transaction.amountPaid = (transaction.amountPaid || 0) + paidAmount;
-
-        if (transaction.amountPaid >= transaction.amount) {
-            transaction.paymentStatus = 'paid';
-        } else {
-            transaction.paymentStatus = 'partial';
-        }
-
-        await transaction.save();
-        return transaction;
-    }
-};
-
-const getAllTransactions = async (filters) => {
+const getAllTransactions = async (currentUserId, filters = {}) => {
     const query = {
-        where: {},
+        where: { createdBy: currentUserId },
         include: [
             { model: Salesman, as: 'salesman', attributes: ['id', 'name', 'contactInfo', 'address'] },
             { model: Distribution, as: 'distribution', attributes: ['id', 'companyName', 'details', 'initialInvestment'] },
@@ -102,14 +67,54 @@ const getAllTransactions = async (filters) => {
         };
     }
 
-    return await Transaction.findAll(query);
+    const transactions = await Transaction.findAll(query);
+    return transactions;
+};
+
+const updateTransaction = async (id, transactionData) => {
+    try {
+        const transaction = await Transaction.findByPk(id);
+        if (!transaction) {
+            return { message: 'Transaction not found' };
+        }
+
+        const [updatedRowsCount, updatedRows] = await Transaction.update(transactionData, {
+            where: { id },
+            returning: true,
+            plain: true
+        });
+
+        if (updatedRowsCount === 0) {
+            return { message: 'No changes made' };
+        }
+
+        const updatedTransaction = updatedRows.get({ plain: true });
+
+        // Placeholder: If the transaction is partially paid, create a recovery record
+        if (transactionData.paymentStatus === 'partial') {
+            // Implement recovery creation logic here
+        }
+
+        return { message: 'Transaction updated successfully', transaction: updatedTransaction };
+    } catch (error) {
+        throw new Error(error.message);
+    }
+};
+
+const deleteTransaction = async (id) => {
+    const result = await Transaction.destroy({
+        where: { id }
+    });
+    if (result === 1) {
+        return { message: 'Transaction deleted successfully' };
+    }
+    return { message: 'Transaction not found' };
 };
 
 module.exports = {
     createTransaction,
     getTransactionById,
+    getAllTransactions,
     updateTransaction,
-    deleteTransaction,
-    markAsPaid,
-    getAllTransactions
+    deleteTransaction
 };

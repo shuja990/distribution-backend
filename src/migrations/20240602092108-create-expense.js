@@ -1,6 +1,6 @@
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('Transactions', {
+    await queryInterface.createTable('Expenses', {
       id: {
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4,
@@ -14,8 +14,12 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false,
         validate: {
-          isIn: [['paid', 'credit', 'partial']]
+          isIn: [['paid', 'credit']]
         }
+      },
+      isPaid: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false
       },
       description: {
         type: Sequelize.TEXT,
@@ -26,14 +30,6 @@ module.exports = {
         allowNull: true,
         references: {
           model: 'Users',
-          key: 'id'
-        }
-      },
-      salesmanId: {
-        type: Sequelize.UUID,
-        allowNull: true,
-        references: {
-          model: 'Salesman',
           key: 'id'
         }
       },
@@ -63,6 +59,6 @@ module.exports = {
   },
 
   down: async (queryInterface) => {
-    await queryInterface.dropTable('Transactions');
+    await queryInterface.dropTable('Expenses');
   }
 };

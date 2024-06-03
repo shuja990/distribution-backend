@@ -1,7 +1,7 @@
 const { DataTypes, UUIDV4 } = require('sequelize');
 
 module.exports = (sequelize) => {
-    const Transaction = sequelize.define('Transaction', {
+    const Expense = sequelize.define('Expense', {
         id: {
             type: DataTypes.UUID,
             defaultValue: UUIDV4,
@@ -15,8 +15,12 @@ module.exports = (sequelize) => {
             type: DataTypes.STRING,
             allowNull: false,
             validate: {
-                isIn: [['paid', 'credit', 'partial']]
+                isIn: [['paid', 'credit']]
             }
+        },
+        isPaid: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: false
         },
         description: {
             type: DataTypes.TEXT,
@@ -27,14 +31,6 @@ module.exports = (sequelize) => {
             allowNull: true,
             references: {
                 model: 'Users',
-                key: 'id'
-            }
-        },
-        salesmanId: {
-            type: DataTypes.UUID,
-            allowNull: true,
-            references: {
-                model: 'Salesman',
                 key: 'id'
             }
         },
@@ -51,23 +47,19 @@ module.exports = (sequelize) => {
             defaultValue: true
         }
     }, {
-        tableName: 'Transactions'
+        tableName: 'Expenses'
     });
 
-    Transaction.associate = (models) => {
-        Transaction.belongsTo(models.User, {
+    Expense.associate = (models) => {
+        Expense.belongsTo(models.User, {
             as: 'creator',
             foreignKey: 'createdBy'
         });
-        Transaction.belongsTo(models.Salesman, {
-            as: 'salesman',
-            foreignKey: 'salesmanId'
-        });
-        Transaction.belongsTo(models.Distribution, {
+        Expense.belongsTo(models.Distribution, {
             as: 'distribution',
             foreignKey: 'distributionId'
         });
     };
 
-    return Transaction;
+    return Expense;
 };

@@ -1,43 +1,50 @@
 const express = require('express');
 const { celebrate, errors } = require('celebrate');
-const transactionController = require('../controllers/transaction.controller');
+const expenseController = require('../controllers/expense.controller');
 const authMiddleware = require('../middleware/auth');
 const roleMiddleware = require('../middleware/role');
 const CONSTANTS = require('../config/constants');
-const transactionSchemas = require('../request-schemas/transaction.schema');
+const expenseSchemas = require('../request-schemas/expense.schema');
 const router = express.Router();
 
 router.post('/create',
-    celebrate(transactionSchemas.createTransaction),
+    celebrate(expenseSchemas.createExpense),
     authMiddleware,
     roleMiddleware([CONSTANTS.roles.SUPER_ADMIN, CONSTANTS.roles.ADMIN]),
-    transactionController.createTransaction
+    expenseController.createExpense
 );
 
 router.get('/:id',
-    celebrate(transactionSchemas.getTransaction),
+    celebrate(expenseSchemas.getExpense),
     authMiddleware,
-    transactionController.getTransaction
+    expenseController.getExpense
 );
 
 router.get('/',
-    celebrate(transactionSchemas.getAllTransactions),
+    celebrate(expenseSchemas.getAllExpenses),
     authMiddleware,
-    transactionController.getAllTransactions
+    expenseController.getAllExpenses
 );
 
 router.put('/:id',
-    celebrate(transactionSchemas.updateTransaction),
+    celebrate(expenseSchemas.updateExpense),
     authMiddleware,
     roleMiddleware([CONSTANTS.roles.SUPER_ADMIN, CONSTANTS.roles.ADMIN]),
-    transactionController.updateTransaction
+    expenseController.updateExpense
 );
 
 router.delete('/:id',
-    celebrate(transactionSchemas.deleteTransaction),
+    celebrate(expenseSchemas.deleteExpense),
     authMiddleware,
     roleMiddleware([CONSTANTS.roles.SUPER_ADMIN, CONSTANTS.roles.ADMIN]),
-    transactionController.deleteTransaction
+    expenseController.deleteExpense
+);
+
+router.put('/:id/mark-as-paid',
+    celebrate(expenseSchemas.markAsPaid),
+    authMiddleware,
+    roleMiddleware([CONSTANTS.roles.SUPER_ADMIN, CONSTANTS.roles.ADMIN]),
+    expenseController.markAsPaid
 );
 
 // Error handler for Celebrate validation errors
