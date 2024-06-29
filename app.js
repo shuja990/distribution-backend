@@ -13,6 +13,9 @@ const distributionRoutes = require('./src/routes/distribution.routes');
 const salesmanRoutes = require('./src/routes/salesman.routes');
 const transactionRoutes = require('./src/routes/transaction.routes');
 const expenseRoutes = require('./src/routes/expense.routes');
+const recoveryRoutes = require('./src/routes/recovery.routes');
+
+const { createMaterializedView } = require('./src/utils/materializedViews');
 
 const helmet = require('helmet');
 const xss = require('xss-clean');
@@ -24,6 +27,9 @@ if (!fs.existsSync(uploadsFolder)) {
     fs.mkdirSync(uploadsFolder);
 }
 
+createMaterializedView().catch(err => {
+    console.error('Failed to create materialized view:', err);
+});
 // ----------------------------------Middleware Ended-------------------------------
 
 // Order of this route matters need to place this above store log middleware as it's returning empty result and we don't need to store record of this
@@ -97,7 +103,7 @@ app.use('/' + process.env.ROUTE + '/distributions', distributionRoutes); // Dist
 app.use('/' + process.env.ROUTE + '/transactions', transactionRoutes); // Distribution routes
 app.use('/' + process.env.ROUTE + '/salesmen', salesmanRoutes); // Salesman routes
 app.use('/' + process.env.ROUTE + '/expenses', expenseRoutes); // Expenses routes
-
+app.use('/' + process.env.ROUTE + '/recovery', recoveryRoutes); // Expenses routes
 
 // ----------------------------Middleware for catching 404 and forward to error handler
 app.use((req, res, next) => {

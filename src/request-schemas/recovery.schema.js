@@ -1,26 +1,22 @@
 const Joi = require('joi');
 
-const transactionSchemas = {
-    createTransaction: {
+const recoverySchemas = {
+    createRecovery: {
         body: Joi.object({
             amount: Joi.number().required(),
-            paymentStatus: Joi.string().valid('paid', 'credit', 'partial').required(),
-            description: Joi.string().allow(null, ''),
+            recoveryDate: Joi.date().required(),
+            status: Joi.string().valid('pending', 'completed').required(),
             createdBy: Joi.string().uuid().required(),
-            salesmanId: Joi.string().uuid().allow(null, ''),
-            distributionId: Joi.string().uuid().allow(null, ''),
-            isActive: Joi.boolean().default(true)
+            transactionId: Joi.string().uuid().required()
         }),
         headers: Joi.object({
             authorization: Joi.string().required()
         }).unknown()
     },
-    getAllTransactions: {
+    getAllRecoveries: {
         query: Joi.object({
-            paymentStatus: Joi.string().valid('paid', 'credit', 'partial').optional(),
-            salesmanId: Joi.string().uuid().optional(),
-            distributionId: Joi.string().uuid().optional(),
-            type: Joi.string().optional(),
+            status: Joi.string().valid('pending', 'completed').optional(),
+            transactionId: Joi.string().uuid().optional(),
             dateRange: Joi.object({
                 start: Joi.date().required(),
                 end: Joi.date().required()
@@ -32,7 +28,7 @@ const transactionSchemas = {
             authorization: Joi.string().required()
         }).unknown()
     },
-    getTransaction: {
+    getRecovery: {
         params: Joi.object({
             id: Joi.string().uuid().required()
         }),
@@ -40,29 +36,24 @@ const transactionSchemas = {
             authorization: Joi.string().required()
         }).unknown()
     },
-    updateTransaction: {
+    updateRecovery: {
         params: Joi.object({
             id: Joi.string().uuid().required()
         }),
         body: Joi.object({
             amount: Joi.number(),
-            paymentStatus: Joi.string().valid('paid', 'credit', 'partial'),
-            description: Joi.string().allow(null, ''),
+            recoveryDate: Joi.date(),
+            status: Joi.string().valid('pending', 'completed'),
             createdBy: Joi.string().uuid(),
-            salesmanId: Joi.string().uuid().allow(null, ''),
-            distributionId: Joi.string().uuid().allow(null, ''),
-            isActive: Joi.boolean()
+            transactionId: Joi.string().uuid()
         }),
         headers: Joi.object({
             authorization: Joi.string().required()
         }).unknown()
     },
-    deleteTransaction: {
+    deleteRecovery: {
         params: Joi.object({
             id: Joi.string().uuid().required()
-        }),
-        query: Joi.object({
-            deleteRecoveries: Joi.boolean().optional()
         }),
         headers: Joi.object({
             authorization: Joi.string().required()
@@ -70,4 +61,4 @@ const transactionSchemas = {
     }
 };
 
-module.exports = transactionSchemas;
+module.exports = recoverySchemas;

@@ -1,5 +1,4 @@
 const Joi = require('joi');
-const CONSTANTS = require('../config/contants');
 
 const salesmanSchemas = {
     createSalesman: {

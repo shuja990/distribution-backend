@@ -3,7 +3,7 @@ const { celebrate, errors } = require('celebrate');
 const expenseController = require('../controllers/expense.controller');
 const authMiddleware = require('../middleware/auth');
 const roleMiddleware = require('../middleware/role');
-const CONSTANTS = require('../config/constants');
+const CONSTANTS = require('../config/contants');
 const expenseSchemas = require('../request-schemas/expense.schema');
 const router = express.Router();
 

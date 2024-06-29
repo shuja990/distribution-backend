@@ -1,4 +1,4 @@
-const transactionService = require('../services/transaction.service');
+const transactionService = require('../services/transaction.services');
 
 const createTransaction = async (req, res) => {
   try {
@@ -53,7 +53,8 @@ const updateTransaction = async (req, res) => {
 
 const deleteTransaction = async (req, res) => {
   try {
-    const result = await transactionService.deleteTransaction(req.params.id);
+    const { deleteRecoveries } = req.query;
+    const result = await transactionService.deleteTransaction(req.params.id, deleteRecoveries === 'true');
     res.json(result);
   } catch (error) {
     res.status(500).json({ error: error.message });

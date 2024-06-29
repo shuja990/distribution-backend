@@ -1,43 +1,43 @@
 const express = require('express');
 const { celebrate, errors } = require('celebrate');
-const transactionController = require('../controllers/transaction.controller');
+const recoveryController = require('../controllers/recovery.controller.js');
 const authMiddleware = require('../middleware/auth');
 const roleMiddleware = require('../middleware/role');
-const transactionSchemas = require('../request-schemas/transaction.schema');
-const CONSTANTS = require('../config/contants');
+const recoverySchemas = require('../request-schemas/recovery.schema');
 const router = express.Router();
+const CONSTANTS = require('../config/contants');
 
 router.post('/create',
-    celebrate(transactionSchemas.createTransaction),
+    celebrate(recoverySchemas.createRecovery),
     authMiddleware,
     roleMiddleware([CONSTANTS.roles.SUPER_ADMIN, CONSTANTS.roles.ADMIN]),
-    transactionController.createTransaction
+    recoveryController.createRecovery
 );
 
 router.get('/:id',
-    celebrate(transactionSchemas.getTransaction),
+    celebrate(recoverySchemas.getRecovery),
     authMiddleware,
-    transactionController.getTransaction
+    recoveryController.getRecovery
 );
 
 router.get('/',
-    celebrate(transactionSchemas.getAllTransactions),
+    celebrate(recoverySchemas.getAllRecoveries),
     authMiddleware,
-    transactionController.getAllTransactions
+    recoveryController.getAllRecoveries
 );
 
 router.put('/:id',
-    celebrate(transactionSchemas.updateTransaction),
+    celebrate(recoverySchemas.updateRecovery),
     authMiddleware,
     roleMiddleware([CONSTANTS.roles.SUPER_ADMIN, CONSTANTS.roles.ADMIN]),
-    transactionController.updateTransaction
+    recoveryController.updateRecovery
 );
 
 router.delete('/:id',
-    celebrate(transactionSchemas.deleteTransaction),
+    celebrate(recoverySchemas.deleteRecovery),
     authMiddleware,
     roleMiddleware([CONSTANTS.roles.SUPER_ADMIN, CONSTANTS.roles.ADMIN]),
-    transactionController.deleteTransaction
+    recoveryController.deleteRecovery
 );
 
 // Error handler for Celebrate validation errors
